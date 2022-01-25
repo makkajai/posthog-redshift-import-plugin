@@ -238,7 +238,7 @@ const getUserProperties = async (
         [],
         config
     )
-    if (!queryResponse || queryResponse.error || !queryResponse.queryResult)
+    if (!queryResponse || queryResponse.error || !queryResponse.queryResult || queryResponse.queryResult.rowCount < 1)
         return result
     for (const [colName, colValue] of Object.entries(queryResponse.queryResult.rows[0])) {
         if(colName === 'customer_type') {
