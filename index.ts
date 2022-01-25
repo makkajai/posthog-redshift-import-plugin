@@ -240,7 +240,7 @@ const getUserProperties = async (
     )
     if (!queryResponse || queryResponse.error || !queryResponse.queryResult)
         return result
-    for (const [colName, colValue] of Object.entries(queryResponse.queryResult!.rows[0])) {
+    for (const [colName, colValue] of Object.entries(queryResponse.queryResult.rows[0])) {
         if(colName === 'customer_type') {
             result = String(colValue)
         }
@@ -297,15 +297,19 @@ const transformations: TransformationsMap = {
                     eventToIngest.properties[rowToEventMap[colName]] = colValue
                 }
             }
-            const analyticsId = eventToIngest.properties['distinct_id']
-            if(analyticsId){
-                const customerType = await getUserProperties(analyticsId, config)
-                if(customerType){
-                    console.log(customerType)
-                    eventToIngest.properties['$set'] = {
-                        'Customer_Type' : customerType
+            try {
+                const analyticsId = eventToIngest.properties['distinct_id']
+                if(analyticsId){
+                    const customerType = await getUserProperties(analyticsId, config)
+                    if(customerType){
+                        console.log(customerType)
+                        eventToIngest.properties['$set'] = {
+                            'Customer_Type' : customerType
+                        }
                     }
                 }
+            } catch (error) {
+                console.log(error)
             }
             return eventToIngest
         }
