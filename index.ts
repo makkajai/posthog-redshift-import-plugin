@@ -297,19 +297,15 @@ const transformations: TransformationsMap = {
                     eventToIngest.properties[rowToEventMap[colName]] = colValue
                 }
             }
-            try {
-                const analyticsId = eventToIngest.properties['distinct_id']
-                if(analyticsId){
-                    const customerType = await getUserProperties(analyticsId, config)
-                    if(customerType){
-                        console.log(customerType)
-                        eventToIngest.properties['$set'] = {
-                            'Customer_Type' : customerType
-                        }
+            const analyticsId = eventToIngest.properties['distinct_id']
+            if(analyticsId != null || analyticsId !== ""){
+                const customerType = await getUserProperties(analyticsId, config)
+                if(customerType){
+                    console.log(customerType)
+                    eventToIngest.properties['$set'] = {
+                        'Customer_Type' : customerType
                     }
                 }
-            } catch (error) {
-                console.log(error)
             }
             return eventToIngest
         }
