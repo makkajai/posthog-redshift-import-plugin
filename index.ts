@@ -238,13 +238,13 @@ const getUserProperties = async (
         config
     )
     if (!queryResponse || queryResponse.error || !queryResponse.queryResult)
-        return String(null)
+        return ""
     for (const [colName, colValue] of Object.entries(queryResponse.queryResult!.rows[0])) {
         if(colName === 'customer_type') {
-            return String(colValue)
+            return `${colValue}`
         }
     }
-    return String(null)
+    return ""
 }
 
 
@@ -296,7 +296,7 @@ const transformations: TransformationsMap = {
                     eventToIngest.properties[rowToEventMap[colName]] = colValue
                 }
             }
-            const customerType = getUserProperties(eventToIngest.properties['distinct_id'], config)
+            const customerType = await getUserProperties(eventToIngest.properties['distinct_id'], config)
             eventToIngest.properties['$set'] = {
                 'Customer_Type' : customerType
             }
