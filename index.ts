@@ -51,6 +51,10 @@ interface TransformationsMap {
     }
 }
 
+interface UserSubscriptionResponse {
+    userSubType: string
+}
+
 
 const EVENTS_PER_BATCH = 10
 const REDIS_OFFSET_KEY = 'import_offset'
@@ -210,8 +214,12 @@ const importAndIngestEvents = async (
 
     for (const event of eventsToIngest) {
         console.log(event)
+        const userProperties = {}
         if(event.properties!.distinct_id){
-            getUserProperties(event.properties!.distinct_id, config)
+            let userProp = await getUserProperties(event.properties!.distinct_id, config)
+            if(userProp){
+
+            }
         }
         posthog.capture(event.event, event.properties)
     }
@@ -228,7 +236,7 @@ const importAndIngestEvents = async (
 const getUserProperties = async (
     analyticsId : string,
     config: PluginMeta<RedshiftImportPlugin>['config']
-) => {
+):Promise<string> => {
     const queryResponse = await executeQuery(
         `SELECT customer_type FROM 
             ${sanitizeSqlIdentifier(config.userPropTableName)}
@@ -238,7 +246,7 @@ const getUserProperties = async (
     )
     for (const [colName, colValue] of Object.entries(queryResponse.queryResult!.rows[0])) {
         if(colName === 'customer_type') {
-            console.log(colValue)
+            return String(colName)
         }
     }
 }
