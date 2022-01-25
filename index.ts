@@ -298,8 +298,10 @@ const transformations: TransformationsMap = {
                 }
             }
             const customerType = await getUserProperties(eventToIngest.properties['distinct_id'], config)
-            eventToIngest.properties['$set'] = {
-                'Customer_Type' : customerType
+            if(customerType){
+                eventToIngest.properties['$set'] = {
+                    'Customer_Type' : customerType
+                }
             }
             return eventToIngest
         }
