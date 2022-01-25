@@ -241,6 +241,7 @@ const getUserProperties = async (
         return ""
     for (const [colName, colValue] of Object.entries(queryResponse.queryResult!.rows[0])) {
         if(colName === 'customer_type') {
+            console.log(colValue)
             return String(colValue)
         }
     }
