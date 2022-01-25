@@ -230,6 +230,7 @@ const getUserProperties = async (
     analyticsId : string,
     config: PluginMeta<RedshiftImportPlugin>['config']
 ):Promise<string> => {
+    let result = ""
     const queryResponse = await executeQuery(
         `SELECT customer_type FROM 
             ${sanitizeSqlIdentifier(config.userPropTableName)}
@@ -238,14 +239,13 @@ const getUserProperties = async (
         config
     )
     if (!queryResponse || queryResponse.error || !queryResponse.queryResult)
-        return String("")
+        return result
     for (const [colName, colValue] of Object.entries(queryResponse.queryResult!.rows[0])) {
         if(colName === 'customer_type') {
-            console.log(colValue)
-            return String(colValue)
+            result = String(colValue)
         }
     }
-    return String("")
+    return result
 }
 
 
