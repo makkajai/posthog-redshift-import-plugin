@@ -298,6 +298,7 @@ const transformations: TransformationsMap = {
                 }
             }
             const analyticsId = eventToIngest.properties['distinct_id']
+            console.log(analyticsId)
             if(analyticsId != null || analyticsId !== ""){
                 const customerType = await getUserProperties(analyticsId, config)
                 if(customerType){
