@@ -230,7 +230,6 @@ const getUserProperties = async (
     analyticsId : string,
     config: PluginMeta<RedshiftImportPlugin>['config']
 ):Promise<string> => {
-    console.log(analyticsId,config)
     let result = ""
     const queryResponse = await executeQuery(
         `SELECT customer_type FROM 
@@ -298,11 +297,14 @@ const transformations: TransformationsMap = {
                     eventToIngest.properties[rowToEventMap[colName]] = colValue
                 }
             }
-            const customerType = await getUserProperties(eventToIngest.properties['distinct_id'], config)
-            console.log(customerType)
-            if(customerType){
-                eventToIngest.properties['$set'] = {
-                    'Customer_Type' : customerType
+            const analyticsId = eventToIngest.properties['distinct_id']
+            if(analyticsId){
+                const customerType = await getUserProperties(analyticsId, config)
+                console.log(customerType)
+                if(customerType){
+                    eventToIngest.properties['$set'] = {
+                        'Customer_Type' : customerType
+                    }
                 }
             }
             return eventToIngest
