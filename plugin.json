@@ -1,6 +1,6 @@
 {
     "name": "Redshift Import Plugin (BETA)",
-    "url": "https://github.com/posthog/posthog-redshift-import-plugin",
+    "url": "https://github.com/makkajai/posthog-redshift-import-plugin",
     "description": "Import PostHog events from Amazon Redshift.",
     "main": "index.ts",
     "posthogVersion": ">= 1.25.0",
@@ -36,6 +36,20 @@
             "name": "Table name",
             "type": "string",
             "default": "posthog_event"
+        },
+        {
+            "key": "userPropTableName",
+            "hint": "This is the table the where you hold the user properties",
+            "name": "User Properties Table Name",
+            "type": "string",
+            "default": "posthog_table_name"
+        },
+        {
+            "key": "attributionTableName",
+            "hint": "This is the table the where you hold the user attribution details",
+            "name": "User Attribution Table Name",
+            "type": "string",
+            "default": "posthog_table_name_2"
         },
         {
             "key": "dbUsername",
@@ -79,6 +93,12 @@
             "type": "choice",
             "choices": ["Import continuously", "Only import historical data"],
             "default": "Import continuously"
+        },
+        {
+            "key": "versionFilter",
+            "name": "Only import events for app version less than",
+            "hint": "Only events which have app version less than this value will be imported by the plugin",
+            "type": "string"
         }
     ]
 }

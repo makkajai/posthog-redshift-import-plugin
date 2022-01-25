@@ -18,6 +18,8 @@ type RedshiftImportPlugin = Plugin<{
         clusterPort: string
         dbName: string
         tableName: string
+        userPropTableName: string
+        attributionTableName: string
         dbUsername: string
         dbPassword: string
         eventsToIgnore: string
@@ -208,6 +210,9 @@ const importAndIngestEvents = async (
 
     for (const event of eventsToIngest) {
         console.log(event)
+        if(event.properties!.distinct_id){
+            getUserProperties(event.properties!.distinct_id, config)
+        }
         posthog.capture(event.event, event.properties)
     }
 
@@ -218,6 +223,24 @@ const importAndIngestEvents = async (
 
     )
     await jobs.importAndIngestEvents({ retriesPerformedSoFar: 0 }).runNow()
+}
+
+const getUserProperties = async (
+    analyticsId : string,
+    config: PluginMeta<RedshiftImportPlugin>['config']
+) => {
+    const queryResponse = await executeQuery(
+        `SELECT customer_type FROM 
+            ${sanitizeSqlIdentifier(config.userPropTableName)}
+            WHERE analytics_id = '${analyticsId}'`,
+        [],
+        config
+    )
+    for (const [colName, colValue] of Object.entries(queryResponse.queryResult!.rows[0])) {
+        if(colName === 'customer_type') {
+            console.log(colValue)
+        }
+    }
 }
 
 

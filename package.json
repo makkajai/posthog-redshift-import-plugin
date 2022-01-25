@@ -1,13 +1,26 @@
 {
-    "name": "posthog-redshift-import-plugin",
-    "private": true,
-    "version": "0.0.1-beta",
-    "description": "Import PostHog events from Amazon Redshift.",
-    "devDependencies": {
-        "@posthog/plugin-contrib": "^0.0.3",
-        "@posthog/plugin-scaffold": "0.12.5",
-        "pg": "^8.0.0",
-        "@types/pg": "^7.14.11"
-
-    }
+  "name": "posthog-redshift-import-plugin",
+  "private": true,
+  "version": "0.0.1-beta",
+  "description": "Import PostHog events from Amazon Redshift.",
+  "devDependencies": {
+    "@posthog/plugin-contrib": "^0.0.3",
+    "@posthog/plugin-scaffold": "0.12.5",
+    "pg": "^8.0.0",
+    "@types/pg": "^7.14.11"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/makkajai/posthog-redshift-import-plugin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/makkajai/posthog-redshift-import-plugin/issues"
+  },
+  "homepage": "https://github.com/makkajai/posthog-redshift-import-plugin#readme"
 }
