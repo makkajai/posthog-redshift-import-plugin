@@ -214,13 +214,6 @@ const importAndIngestEvents = async (
 
     for (const event of eventsToIngest) {
         console.log(event)
-        const userProperties = {}
-        if(event.properties!.distinct_id){
-            let userProp = await getUserProperties(event.properties!.distinct_id, config)
-            if(userProp){
-
-            }
-        }
         posthog.capture(event.event, event.properties)
     }
 
@@ -244,11 +237,14 @@ const getUserProperties = async (
         [],
         config
     )
+    if (!queryResponse || queryResponse.error || !queryResponse.queryResult)
+        return String(null)
     for (const [colName, colValue] of Object.entries(queryResponse.queryResult!.rows[0])) {
         if(colName === 'customer_type') {
-            return String(colName)
+            return String(colValue)
         }
     }
+    return String(null)
 }
 
 
@@ -273,7 +269,7 @@ const transformations: TransformationsMap = {
     },
     'JSON Map': {
         author: 'yakkomajuri',
-        transform: async (row, { attachments }) => {
+        transform: async (row, { attachments,config }) => {
             if (!attachments.rowToEventMap) {
                 throw new Error('Row to event mapping JSON file not provided!')
             }
@@ -300,7 +296,10 @@ const transformations: TransformationsMap = {
                     eventToIngest.properties[rowToEventMap[colName]] = colValue
                 }
             }
-
+            const customerType = getUserProperties(eventToIngest.properties['distinct_id'], config)
+            eventToIngest.properties['$set'] = {
+                'Customer_Type' : customerType
+            }
             return eventToIngest
         }
     }
