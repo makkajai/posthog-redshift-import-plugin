@@ -18,8 +18,6 @@ type RedshiftImportPlugin = Plugin<{
         clusterPort: string
         dbName: string
         tableName: string
-        userPropTableName: string
-        attributionTableName: string
         dbUsername: string
         dbPassword: string
         eventsToIgnore: string
@@ -49,10 +47,6 @@ interface TransformationsMap {
         author: string
         transform: (row: QueryResultRow, meta: PluginMeta<RedshiftImportPlugin>) => Promise<TransformedPluginEvent>
     }
-}
-
-interface UserSubscriptionResponse {
-    userSubType: string
 }
 
 
@@ -226,28 +220,6 @@ const importAndIngestEvents = async (
     await jobs.importAndIngestEvents({ retriesPerformedSoFar: 0 }).runNow()
 }
 
-const getUserProperties = async (
-    analyticsId : string,
-    config: PluginMeta<RedshiftImportPlugin>['config']
-):Promise<string> => {
-    let result = ""
-    const queryResponse = await executeQuery(
-        `SELECT customer_type FROM 
-            ${sanitizeSqlIdentifier(config.userPropTableName)}
-            WHERE analytics_id = '${analyticsId}'`,
-        [],
-        config
-    )
-    if (!queryResponse || queryResponse.error || !queryResponse.queryResult || queryResponse.queryResult.rowCount < 1)
-        return result
-    for (const [colName, colValue] of Object.entries(queryResponse.queryResult.rows[0])) {
-        if(colName === 'customer_type') {
-            result = String(colValue)
-        }
-    }
-    return result
-}
-
 
 // Transformations can be added by any contributor
 // 'author' should be the contributor's GH username
@@ -270,7 +242,7 @@ const transformations: TransformationsMap = {
     },
     'JSON Map': {
         author: 'yakkomajuri',
-        transform: async (row, { attachments,config }) => {
+        transform: async (row, { attachments }) => {
             if (!attachments.rowToEventMap) {
                 throw new Error('Row to event mapping JSON file not provided!')
             }
@@ -297,17 +269,7 @@ const transformations: TransformationsMap = {
                     eventToIngest.properties[rowToEventMap[colName]] = colValue
                 }
             }
-            const analyticsId = eventToIngest.properties['distinct_id']
-            console.log(analyticsId)
-            if(analyticsId != null || analyticsId !== ""){
-                const customerType = await getUserProperties(analyticsId, config)
-                if(customerType){
-                    console.log(customerType)
-                    eventToIngest.properties['$set'] = {
-                        'Customer_Type' : customerType
-                    }
-                }
-            }
+
             return eventToIngest
         }
     }

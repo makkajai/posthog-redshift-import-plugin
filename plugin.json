@@ -38,20 +38,6 @@
             "default": "posthog_event"
         },
         {
-            "key": "userPropTableName",
-            "hint": "This is the table the where you hold the user properties",
-            "name": "User Properties Table Name",
-            "type": "string",
-            "default": "posthog_table_name"
-        },
-        {
-            "key": "attributionTableName",
-            "hint": "This is the table the where you hold the user attribution details",
-            "name": "User Attribution Table Name",
-            "type": "string",
-            "default": "posthog_table_name_2"
-        },
-        {
             "key": "dbUsername",
             "hint": "This user needs read access to the table specified above.",
             "name": "Username available to the plugin for accessing your database instance",
@@ -93,12 +79,6 @@
             "type": "choice",
             "choices": ["Import continuously", "Only import historical data"],
             "default": "Import continuously"
-        },
-        {
-            "key": "versionFilter",
-            "name": "Only import events for app version less than",
-            "hint": "Only events which have app version less than this value will be imported by the plugin",
-            "type": "string"
         }
     ]
 }
