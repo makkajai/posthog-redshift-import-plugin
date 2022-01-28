@@ -50,7 +50,7 @@ interface TransformationsMap {
 }
 
 
-const EVENTS_PER_BATCH = 100
+const EVENTS_PER_BATCH = 10
 const REDIS_OFFSET_KEY = 'import_offset'
 
 const sanitizeSqlIdentifier = (unquotedIdentifier: string): string => {
