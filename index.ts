@@ -50,7 +50,7 @@ interface TransformationsMap {
 }
 
 
-const EVENTS_PER_BATCH = 10
+const EVENTS_PER_BATCH = 100
 const REDIS_OFFSET_KEY = 'import_offset'
 
 const sanitizeSqlIdentifier = (unquotedIdentifier: string): string => {
@@ -104,10 +104,11 @@ export const setupPlugin: RedshiftImportPlugin['setupPlugin'] = async ({ config,
 
     // needed to prevent race conditions around offsets leading to events ingested twice
     global.initialOffset = Number(offset)
-    console.log(`Plugin Loaded Offset: ${Number(offset)}`)
     await cache.set(REDIS_OFFSET_KEY, Number(offset) / EVENTS_PER_BATCH)
-
+    
     await jobs.importAndIngestEvents({ retriesPerformedSoFar: 0 }).runIn(10, 'seconds')
+    
+    console.log(`Plugin Loaded Offset: ${Number(offset)}`)
 }
 
 
