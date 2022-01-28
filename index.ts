@@ -209,6 +209,9 @@ const importAndIngestEvents = async (
 
 
     for (const event of eventsToIngest) {
+        if(!event.event || !event.properties?.distinct_id) {
+            continue
+        }
         console.log(event)
         posthog.capture(event.event, event.properties)
     }
