@@ -113,6 +113,7 @@ export const setupPlugin: RedshiftImportPlugin['setupPlugin'] = async ({ config,
 
 
 export const teardownPlugin: RedshiftImportPlugin['teardownPlugin'] = async ({ global, cache, storage }) => {
+    console.log(`Tearing down plugin`)
     const redisOffset = await cache.get(REDIS_OFFSET_KEY, 0)
     const workerOffset = Number(redisOffset) * EVENTS_PER_BATCH
     const offsetToStore = workerOffset > global.totalRows ? global.totalRows : workerOffset
