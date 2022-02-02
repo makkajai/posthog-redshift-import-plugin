@@ -24,6 +24,7 @@ type RedshiftImportPlugin = Plugin<{
         orderByColumn: string
         transformationName: string
         importMechanism: 'Import continuously' | 'Only import historical data'
+        eventsPerBatch : string
     }
 }>
 
@@ -50,7 +51,7 @@ interface TransformationsMap {
 }
 
 
-const EVENTS_PER_BATCH = 500
+let EVENTS_PER_BATCH = 500
 const REDIS_OFFSET_KEY = 'import_offset'
 
 const sanitizeSqlIdentifier = (unquotedIdentifier: string): string => {
@@ -62,11 +63,16 @@ export const jobs: RedshiftImportPlugin['jobs'] = {
 }
 
 export const setupPlugin: RedshiftImportPlugin['setupPlugin'] = async ({ config, cache, jobs, global, storage }) => {
-    const requiredConfigOptions = ['clusterHost', 'clusterPort', 'dbName', 'dbUsername', 'dbPassword']
+    const requiredConfigOptions = ['clusterHost', 'clusterPort', 'dbName', 'dbUsername', 'dbPassword', 'eventsPerBatch']
     for (const option of requiredConfigOptions) {
         if (!(option in config)) {
             throw new Error(`Required config option ${option} is missing!`)
         }
+    }
+
+    if(config.eventsPerBatch) {
+        console.log(`Events per batch: ${Number(config.eventsPerBatch)}`)
+        EVENTS_PER_BATCH = Number(config.eventsPerBatch)
     }
 
     if (!config.clusterHost.endsWith('redshift.amazonaws.com')) {

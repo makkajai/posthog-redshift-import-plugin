@@ -79,6 +79,13 @@
             "type": "choice",
             "choices": ["Import continuously", "Only import historical data"],
             "default": "Import continuously"
+        },
+        {
+            "key": "Number of events per batch",
+            "hint": "Number of events that will be queried per batch",
+            "name": "eventsPerBatch",
+            "type": "string",
+            "default" : "10"
         }
     ]
 }
