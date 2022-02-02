@@ -81,9 +81,9 @@
             "default": "Import continuously"
         },
         {
-            "key": "Number of events per batch",
+            "key": "eventsPerBatch",
             "hint": "Number of events that will be queried per batch",
-            "name": "eventsPerBatch",
+            "name": "Events per batch",
             "type": "string",
             "default" : "10"
         }
