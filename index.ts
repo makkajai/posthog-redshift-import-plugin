@@ -148,6 +148,7 @@ const executeQuery = async (
     try {
         queryResult = await pgClient.query(query, values)
     } catch (err) {
+        console.log(`Error in querying : ${err}`)
         error = err as Error
     }
 
@@ -167,7 +168,7 @@ const importAndIngestEvents = async (
         return
     }
 
-    const { global, cache, config, jobs } = meta
+    const { global, cache, config, jobs, storage } = meta
 
     let offset: number
     if (payload.offset) {
@@ -207,6 +208,8 @@ const importAndIngestEvents = async (
             .runIn(nextRetrySeconds, 'seconds')
     }
 
+    console.log("Ingesting Records")
+
     const eventsToIngest: TransformedPluginEvent[] = []
 
     for (const row of queryResponse.queryResult!.rows) {
@@ -228,6 +231,12 @@ const importAndIngestEvents = async (
         } from them.`
 
     )
+
+    let offsetToStore = Number(offset + EVENTS_PER_BATCH)
+
+    console.log(`Storing to storage offset : ${offsetToStore}`)
+    await storage.set(REDIS_OFFSET_KEY, offsetToStore)
+    
     await jobs.importAndIngestEvents({ retriesPerformedSoFar: 0 }).runNow()
 }
 
