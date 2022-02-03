@@ -186,15 +186,11 @@ const importAndIngestEvents = async (
     }
 
     
-    const query = `SELECT * FROM ${sanitizeSqlIdentifier(
-        meta.config.tableName
-    )} 
-    ORDER BY ${sanitizeSqlIdentifier( config.orderByColumn)}
-    OFFSET $1 LIMIT ${EVENTS_PER_BATCH}`
+    const query = `SELECT * FROM ${sanitizeSqlIdentifier(meta.config.tableName)} 
+    WHERE ${sanitizeSqlIdentifier(config.orderByColumn)} > ${offset} AND
+    ${sanitizeSqlIdentifier(config.orderByColumn)} <= ${offset + EVENTS_PER_BATCH}`
 
-    const values = [offset]
-
-    const queryResponse = await executeQuery(query, values, config)
+    const queryResponse = await executeQuery(query, [], config)
 
     if (!queryResponse || queryResponse.error || !queryResponse.queryResult) {
         const nextRetrySeconds = 2 ** payload.retriesPerformedSoFar * 3
