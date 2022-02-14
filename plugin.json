@@ -86,6 +86,13 @@
             "name": "Events per batch",
             "type": "string",
             "default" : "10"
+        },
+        {
+            "key": "appVersionFilter",
+            "hint": "Version of app after which all events will not be sent to posthog",
+            "name": "App Version Filter",
+            "type": "string",
+            "default" : "35.0.0"
         }
     ]
 }

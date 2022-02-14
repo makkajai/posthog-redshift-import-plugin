@@ -25,6 +25,7 @@ type RedshiftImportPlugin = Plugin<{
         transformationName: string
         importMechanism: 'Import continuously' | 'Only import historical data'
         eventsPerBatch : string
+        appVersionFilter : string
     }
 }>
 
@@ -218,6 +219,10 @@ const importAndIngestEvents = async (
         if(!event.event || !event.properties?.distinct_id) {
             continue
         }
+        var eventAppVersion = event.properties[`$app_version`]
+        if(compareVersionNumbers(config.appVersionFilter, eventAppVersion) >= 0) {
+            continue
+        }
         posthog.capture(event.event, event.properties)
     }
 
@@ -234,6 +239,49 @@ const importAndIngestEvents = async (
     await storage.set(REDIS_OFFSET_KEY, offsetToStore)
     
     await jobs.importAndIngestEvents({ retriesPerformedSoFar: 0 }).runNow()
+}
+
+const isPositiveInteger = (x: string) => {
+    return /^\d+$/.test(x);
+}
+
+// if v1 == v2 return 0, v1 < v2 return -1, v1 > v2 return 1
+const compareVersionNumbers = (v1 : string, v2 : string) => {
+    var v1parts = v1.split('.');
+    var v2parts = v2.split('.');
+
+    // First, validate both numbers are true version numbers
+    function validateParts(parts: string | any[]) {
+        for (var i = 0; i < parts.length; ++i) {
+            if (!isPositiveInteger(parts[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    if (!validateParts(v1parts) || !validateParts(v2parts)) {
+        return NaN;
+    }
+
+    for (var i = 0; i < v1parts.length; ++i) {
+        if (v2parts.length === i) {
+            return 1;
+        }
+
+        if (v1parts[i] === v2parts[i]) {
+            continue;
+        }
+        if (v1parts[i] > v2parts[i]) {
+            return 1;
+        }
+        return -1;
+    }
+
+    if (v1parts.length != v2parts.length) {
+        return -1;
+    }
+
+    return 0;
 }
 
 
