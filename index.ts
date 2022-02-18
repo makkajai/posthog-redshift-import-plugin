@@ -227,11 +227,6 @@ const importAndIngestEvents = async (
         } from them.`
 
     )
-
-    let offsetToStore = Number(offset + EVENTS_PER_BATCH)
-
-    console.log(`Storing to storage offset : ${offsetToStore}`)
-    await storage.set(REDIS_OFFSET_KEY, offsetToStore)
     
     await jobs.importAndIngestEvents({ retriesPerformedSoFar: 0 }).runNow()
 }
