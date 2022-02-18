@@ -237,12 +237,12 @@ const importAndIngestEvents = async (
     await jobs.importAndIngestEvents({ retriesPerformedSoFar: 0 }).runNow()
 }
 
-const isValidEvent = (event: TransformedPluginEvent) => {
+export const isValidEvent = (event: TransformedPluginEvent) => {
     if(!event.event || !event.properties?.distinct_id){
         return false
     }
-    var version = event.properties[`$app_version`]
-    if(/^3[5-9]/.test(version)) {
+    var version = event.properties.$app_version
+    if(/^3[5-9]/g.test(version)) {
         return false
     }
     return true
