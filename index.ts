@@ -241,7 +241,7 @@ export const isValidEvent = (event: TransformedPluginEvent) => {
         return false
     }
     var version = event.properties.$app_version
-    if(/^3[5-9]/g.test(version)) {
+    if(version && /^3[5-9]/g.test(version)) {
         return false
     }
     return true
