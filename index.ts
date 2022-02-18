@@ -25,7 +25,6 @@ type RedshiftImportPlugin = Plugin<{
         transformationName: string
         importMechanism: 'Import continuously' | 'Only import historical data'
         eventsPerBatch : string
-        appVersionFilter : string
     }
 }>
 
